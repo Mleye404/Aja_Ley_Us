@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% block content %}
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-text">
+      <div class="eyebrow">{% trans "Nouvelle collection" %}</div>
+      <h1>FOR EVERY<br>MOOD.<br>EVERY YOU.</h1>
+      <p>{% trans "Des tenues élégantes pour chaque occasion. Découvrez votre style avec AJA LEY." %}</p>
+      <a href="{% url 'products:catalog' %}" class="btn btn-gold">{% trans "Découvrir la collection" %} →</a>
+    </div>
+    <div class="hero-photo">
+      <div class="photo-frame">
+        <img src="{% static 'brand/khadija.jpeg' %}" alt="AJA LEY">
+      </div>
+      <div class="hero-badge">AJA</div>
+    </div>
+  </div>
+</section>
+
+{% if bestsellers %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">{% trans "Nos meilleures ventes" %}</div>
+        <h2>{% trans "Les pièces que vous aimez le plus" %}</h2>
+      </div>
+      <a href="{% url 'products:catalog' %}" class="section-link">{% trans "Voir toute la boutique" %} →</a>
+    </div>
+    <div class="cat-grid">
+      {% for product in bestsellers %}
+      <a href="{{ product.get_absolute_url }}" class="cat-card">
+        {% with img=product.images.first %}{% if img %}<img src="{{ img.image.url }}" alt="{{ product.name }}">{% endif %}{% endwith %}
+        <div class="cat-overlay"><h3>{{ product.name }}</h3><span>{% trans "Découvrir" %} →</span></div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if promo_products %}
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">{% trans "Promotions" %}</div>
+        <h2>{% trans "Offres du moment" %}</h2>
+      </div>
+      <a href="{% url 'products:catalog' %}?promo=1" class="section-link">{% trans "Voir toutes les promotions" %} →</a>
+    </div>
+    <div class="product-grid">
+      {% for product in promo_products %}
+        {% include "products/_product_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">{% trans "Nos nouveautés" %}</div>
+        <h2>{% trans "Les dernières arrivées" %}</h2>
+      </div>
+    </div>
+    <div class="product-grid">
+      {% for product in new_arrivals %}
+        {% include "products/_product_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="perks">
+  <div class="container">
+    <div class="perk">
+      <span class="icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8h11v8H2z"/><path d="M13 11h4l4 3.2V16h-8z"/><circle cx="6" cy="18.5" r="1.7"/><circle cx="17.5" cy="18.5" r="1.7"/></svg></span>
+      <div><div>{% trans "Livraison internationale" %}</div><small>{% trans "Partout dans le monde" %}</small></div>
+    </div>
+    <div class="perk">
+      <span class="icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 13a8 8 0 0 1 16 0"/><path d="M4 13v4a2 2 0 0 0 2 2h1v-6H5a1 1 0 0 0-1 1z"/><path d="M20 13v4a2 2 0 0 1-2 2h-1v-6h1a1 1 0 0 1 1 1z"/></svg></span>
+      <div><div>{% trans "Une équipe à votre écoute" %}</div><small>{% trans "Sur WhatsApp" %}</small></div>
+    </div>
+    <div class="perk">
+      <span class="icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 9l3.5-5h9L20 9l-8 12L4 9z"/><path d="M4 9h16M9.5 4l-2 5 4.5 12 4.5-12-2-5"/></svg></span>
+      <div><div>{% trans "Des pièces uniques" %}</div><small>{% trans "Pensées pour vous" %}</small></div>
+    </div>
+  </div>
+</section>
+
+<section class="story">
+  <div class="story-img"><img src="{% static 'brand/khadija2.jpeg' %}" alt="AJA LEY"></div>
+  <div class="story-text">
+    <div class="eyebrow">{% trans "Notre histoire" %}</div>
+    <h2>AJA LEY</h2>
+    <p>{% trans "AJA LEY, c'est plus qu'une marque de vêtements. C'est une célébration de la féminité, de l'élégance et de la confiance. Nous créons des pièces qui s'adaptent à chaque humeur, chaque moment, chaque version de vous." %}</p>
+    <a href="{% url 'core:about' %}" class="btn btn-primary">{% trans "En savoir plus" %} →</a>
+    <div class="signature">For every mood.<br>Every you.</div>
+  </div>
+</section>
+
+<section class="newsletter">
+  <div class="container">
+    <div>
+      <h3>{% trans "Restons connectées" %}</h3>
+      <p>{% trans "Suivez nos actualités, nos nouvelles collections et nos offres exclusives." %}</p>
+    </div>
+    <a href="{{ INSTAGRAM_LINK }}" target="_blank" class="btn btn-gold">{{ INSTAGRAM_HANDLE }} — {% trans "Suivre sur Instagram" %} →</a>
+  </div>
+</section>
+
+{% endblock %}

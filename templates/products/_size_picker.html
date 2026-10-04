@@ -1,0 +1,20 @@
+{% load i18n %}
+{# Choix de la taille (XS à XXL) + longueur. Contexte : sizes, lengths, selected_size, selected_length #}
+<div class="size-block">
+  <div class="size-head">
+    <span class="size-label">{% trans "Taille" %}</span>
+    <button type="button" class="size-guide-btn" data-open-modal="sizeGuide">{% trans "Guide des tailles" %}</button>
+  </div>
+  <div class="size-options" role="radiogroup" aria-label="{% trans 'Taille' %}">
+    {% for s in sizes %}
+    <label class="size-pill"><input type="radio" name="size" value="{{ s }}" required{% if s == selected_size %} checked{% endif %}><span>{{ s }}</span></label>
+    {% endfor %}
+  </div>
+</div>
+<div class="form-group size-length">
+  <label for="id_length">{% trans "Longueur" %}</label>
+  <select name="length" id="id_length" required>
+    <option value="">{% trans "Choisissez votre longueur" %}</option>
+    {% for l in lengths %}<option value="{{ l }}"{% if l == selected_length %} selected{% endif %}>{{ l }}</option>{% endfor %}
+  </select>
+</div>

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% block content %}
+<div class="page-header"><h1>{% trans "À propos" %}</h1><div class="breadcrumb">{{ SITE_NAME }}</div></div>
+<section class="story">
+  <div class="story-img"><img src="{% static 'brand/khadija2.jpeg' %}" alt="{{ SITE_NAME }}"></div>
+  <div class="story-text">
+    <div class="eyebrow">{% trans "Notre histoire" %}</div>
+    <h2>{{ SITE_NAME }}</h2>
+    <p>{% trans "AJA LEY est une marque de mode féminine née du désir d'offrir des pièces élégantes, chaleureuses et intemporelles : robes, ensembles, abayas et tenues de cérémonie." %}</p>
+    <p>{% trans "Chaque pièce est pensée pour s'adapter à votre humeur du jour, à votre silhouette et à votre personnalité — car chez AJA LEY, chaque femme mérite une mode qui lui ressemble." %}</p>
+    <p>{% trans "Nous livrons au Sénégal et à l'international, et restons joignables à tout moment sur WhatsApp pour vous accompagner dans le choix de votre tenue et de vos mensurations." %}</p>
+    <div class="signature">For every mood.<br>Every you.</div>
+  </div>
+</section>
+{% endblock %}

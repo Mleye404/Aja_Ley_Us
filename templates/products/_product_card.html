@@ -1,0 +1,28 @@
+{% load i18n aja_extras %}
+<div class="product-card">
+  <a href="{{ product.get_absolute_url }}">
+    <div class="product-media">
+      {% if product.is_new %}<span class="badge">{% trans "Nouveau" %}</span>
+      {% elif not product.is_available %}<span class="badge badge-out">{% trans "Rupture de stock" %}</span>{% endif %}
+      {% if product.is_on_promo %}<span class="badge badge-promo">-{{ product.discount_percent }}&nbsp;%</span>{% endif %}
+      {% with img=product.images.first %}
+        {% if img %}<img src="{{ img.image.url }}" alt="{{ product.name }}">{% endif %}
+      {% endwith %}
+    </div>
+  </a>
+  {% if user.is_authenticated %}
+  <form action="{% url 'products:toggle_favorite' product.slug %}" method="post" style="display:contents;">
+    {% csrf_token %}
+    <button type="submit" class="fav-btn {% if product.id in favorite_ids %}active{% endif %}" style="position:absolute; top:12px; right:12px; border:none;">♥</button>
+  </form>
+  {% endif %}
+  <div class="product-info">
+    <div class="name"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></div>
+    <div class="price">
+      {% if product.is_on_promo %}
+        <span class="price-old">{{ product.price|fcfa }} FCFA</span>
+        <span class="price-now">{{ product.current_price|fcfa }} FCFA</span>
+      {% else %}{{ product.price|fcfa }} FCFA{% endif %}
+    </div>
+  </div>
+</div>

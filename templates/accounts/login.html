@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="container">
+  <div class="auth-box">
+    <h1>{% trans "Connexion" %}</h1>
+    <form method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+      <div class="form-error" role="alert">{% for error in form.non_field_errors %}{{ error }}{% endfor %}</div>
+      {% endif %}
+      {% for field in form %}
+      <div class="form-group">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary btn-block">{% trans "Se connecter" %}</button>
+    </form>
+    <div class="auth-switch">{% trans "Pas encore de compte ?" %} <a href="{% url 'accounts:signup' %}">{% trans "Créer un compte" %}</a></div>
+    <div class="auth-switch">{% trans "Vous pouvez aussi commander sans créer de compte." %} <a href="{% url 'products:catalog' %}">{% trans "Continuer mes achats" %}</a></div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load i18n aja_extras %}
+{% block content %}
+<div class="page-header"><h1>{% trans "Récapitulatif de commande" %}</h1></div>
+<div class="container" style="padding:50px 0;">
+  <div class="steps"><span>{% trans "Panier" %}</span> › <span>{% trans "Informations" %}</span> › <span class="current">{% trans "Récapitulatif" %}</span> › <span>{% trans "Confirmation" %}</span></div>
+
+  <div class="cart-layout">
+    <div>
+      <div class="form-card" style="margin-bottom:24px;">
+        <h3 style="margin-bottom:14px;">{% trans "Vos informations" %}</h3>
+        <div class="info-list" style="margin-top:0;">
+          <div>{% trans "Nom" %} : {{ data.first_name }} {{ data.last_name }}</div>
+          <div>{% trans "Téléphone" %} : {{ data.phone }}</div>
+          {% if data.email %}<div>Email : {{ data.email }}</div>{% endif %}
+          {% if international %}
+          <div>🌍 {% trans "Commande internationale" %}</div>
+          <div>{% trans "Pays" %} : {{ data.country }}</div>
+          <div>{% trans "Ville" %} : {{ data.city }}{% if data.district %} — {{ data.district }}{% endif %}</div>
+          {% else %}
+          <div>{% trans "Région" %} : {{ data.city }}</div>
+          {% if data.delivery_zone %}<div>{% trans "Zone de livraison" %} : {{ data.delivery_zone }}</div>{% endif %}
+          {% if data.locality %}<div>{% trans "Ville / localité" %} : {{ data.locality }}</div>{% endif %}
+          {% if data.district %}<div>{% trans "Quartier" %} : {{ data.district }}</div>{% endif %}
+          {% endif %}
+          {% if data.extra_info %}<div>{% trans "Instructions" %} : {{ data.extra_info }}</div>{% endif %}
+        </div>
+        <a href="{% if international %}{% url 'orders:checkout_international' %}{% else %}{% url 'orders:checkout' %}{% endif %}" class="section-link" style="display:inline-block; margin-top:16px;">{% trans "Modifier mes informations" %}</a>
+      </div>
+
+      <div class="form-card">
+        <h3 style="margin-bottom:14px;">{% trans "Articles commandés" %}</h3>
+        {% for item in items %}
+        <div class="cart-item">
+          {% with img=item.product.images.first %}
+          {% if img %}<img src="{{ img.image.url }}" alt="{{ item.product.name }}">{% endif %}
+          {% endwith %}
+          <div>
+            <strong>{{ item.product.name }}</strong> ×{{ item.quantity }}
+            {% if item.has_size %}
+            <div class="measurements">{% trans "Taille" %} : {{ item.size }}{% if item.length %} · {% trans "Longueur" %} : {{ item.length }}{% endif %}</div>
+            {% elif item.has_measurements %}
+            <div class="measurements">
+              {% if item.bust %}{% trans "Poitrine" %} : {{ item.bust|floatformat:"-1" }} cm · {% endif %}
+              {% if item.waist %}{% trans "Taille" %} : {{ item.waist|floatformat:"-1" }} cm · {% endif %}
+              {% if item.hips %}{% trans "Hanches" %} : {{ item.hips|floatformat:"-1" }} cm · {% endif %}
+              {% if item.shoulders %}{% trans "Épaules" %} : {{ item.shoulders|floatformat:"-1" }} cm{% endif %}
+            </div>
+            {% endif %}
+          </div>
+          <div>
+            {% if item.product.is_on_promo %}<span class="price-old">{{ item.product.price|fcfa }}</span><br>{% endif %}
+            <strong>{{ item.line_total|fcfa }} FCFA</strong>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <h3 style="margin-bottom:16px;">{% trans "Total" %}</h3>
+      <div class="summary-row"><span>{% trans "Sous-total" %}</span><span>{{ subtotal|fcfa }} FCFA</span></div>
+      <div class="summary-row">
+        <span>{% trans "Livraison" %}</span>
+        <span>{% if shipping_fee %}{{ shipping_fee|fcfa }} FCFA{% else %}{{ shipping_note }}{% endif %}</span>
+      </div>
+      <div class="summary-row total"><span>{% if international %}{% trans "Total produits" %}{% else %}{% trans "Total" %}{% endif %}</span><span>{{ total|fcfa }} FCFA</span></div>
+      {% if international %}<p class="summary-note">{% trans "Les frais de livraison internationale seront confirmés avec AJA LEY." %}</p>{% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top:16px;">{% trans "Confirmer ma commande" %} →</button>
+      </form>
+      <p style="font-size:12px; color:var(--gris); margin-top:12px;">{% trans "Aucun paiement n'est demandé ici. Vous recevrez ensuite les instructions de paiement via WhatsApp." %}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

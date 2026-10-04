@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load i18n aja_extras %}
+{% block content %}
+<div class="container product-detail">
+  <div class="gallery">
+    {% with images=product.images.all %}
+    <div class="gallery-main">
+      {% if images %}<img id="main-img" src="{{ images.0.image.url }}" alt="{{ product.name }}">{% endif %}
+    </div>
+    {% if images|length > 1 %}
+    <div class="gallery-thumbs">
+      {% for img in images %}
+      <img src="{{ img.image.url }}" class="{% if forloop.first %}active{% endif %}"
+           onclick="document.getElementById('main-img').src=this.src; document.querySelectorAll('.gallery-thumbs img').forEach(i=>i.classList.remove('active')); this.classList.add('active');">
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+  </div>
+  <div class="detail-info">
+    {% if product.category %}<div class="category-tag">{{ product.category.name }}</div>{% endif %}
+    <h1>{{ product.name }}</h1>
+    <div class="price">
+      {% if product.is_on_promo %}
+        <span class="price-old">{{ product.price|fcfa }} FCFA</span>
+        <span class="price-now">{{ product.current_price|fcfa }} FCFA</span>
+        <span class="promo-pill">-{{ product.discount_percent }}&nbsp;%</span>
+      {% else %}{{ product.price|fcfa }} FCFA{% endif %}
+    </div>
+    {% if product.description %}<p class="desc">{{ product.description }}</p>{% endif %}
+
+    <div class="detail-actions">
+      {% if product.is_available %}
+      <form method="post" action="{% url 'cart:add_to_cart' product.slug %}" class="size-form">
+        {% csrf_token %}
+        {% include "products/_size_picker.html" %}
+        <button type="submit" class="btn btn-primary btn-block">{% trans "Ajouter au panier" %}</button>
+      </form>
+      {% else %}
+      <span class="btn btn-disabled btn-block">{% trans "Rupture de stock" %}</span>
+      {% endif %}
+      <a href="https://wa.me/{{ WHATSAPP_INTL }}?text={% trans 'Bonjour, je suis intéressée par' %}%20{{ product.name }}" target="_blank" class="btn btn-wa btn-block">{% trans "Commander via WhatsApp" %}</a>
+      {% if user.is_authenticated %}
+      <form action="{% url 'products:toggle_favorite' product.slug %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline btn-block">{% if is_favorite %}♥ {% trans "Dans vos favoris" %}{% else %}♡ {% trans "Ajouter aux favoris" %}{% endif %}</button>
+      </form>
+      {% endif %}
+    </div>
+
+    <div class="info-list">
+      <div>{% trans "Catégorie" %} : {{ product.category.name|default:"—" }}</div>
+      {% if product.color %}<div>{% trans "Couleur" %} : {{ product.color }}</div>{% endif %}
+      <div>{% trans "Disponibilité" %} : {% if product.is_available %}{% trans "En stock" %}{% else %}{% trans "Rupture de stock" %}{% endif %}</div>
+    </div>
+  </div>
+</div>
+
+{% include "products/_size_guide.html" %}
+
+{% if related %}
+<div class="container section">
+  <div class="section-head"><h2>{% trans "Vous aimerez aussi" %}</h2></div>
+  <div class="product-grid">
+    {% for product in related %}{% include "products/_product_card.html" %}{% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

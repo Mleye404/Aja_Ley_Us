@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load i18n aja_extras %}
+{% block content %}
+<div class="page-header"><h1>{% trans "Mon panier" %}</h1></div>
+<div class="container" style="padding:50px 0;">
+{% if items %}
+  <div class="cart-layout">
+    <div>
+      {% for item in items %}
+      <div class="cart-item">
+        {% with img=item.product.images.first %}
+        <a href="{{ item.product.get_absolute_url }}">{% if img %}<img src="{{ img.image.url }}">{% endif %}</a>
+        {% endwith %}
+        <div>
+          <strong>{{ item.product.name }}</strong><br>
+          <span style="color:var(--bordeaux);">
+            {% if item.product.is_on_promo %}<span class="price-old">{{ item.product.price|fcfa }} FCFA</span> {% endif %}{{ item.product.current_price|fcfa }} FCFA
+          </span>
+          {% if item.product.is_on_promo %}<span class="promo-pill">-{{ item.product.discount_percent }}&nbsp;%</span>{% endif %}
+          {% if not item.product.is_available %}<div class="measurements" style="color:var(--bordeaux);">{% trans "Ce produit est actuellement en rupture de stock — retirez-le pour passer commande." %}</div>{% endif %}
+          {% if item.has_size %}
+          <div class="measurements">
+            {% trans "Taille" %} : {{ item.size }}{% if item.length %} · {% trans "Longueur" %} : {{ item.length }}{% endif %}
+            <br><a href="{% url 'cart:edit_size' item.id %}">{% trans "Modifier la taille" %}</a>
+          </div>
+          {% elif item.has_measurements %}
+          <div class="measurements">
+            {% trans "Mensurations" %} :
+            {% if item.bust %}{% trans "Poitrine" %} : {{ item.bust }} cm · {% endif %}
+            {% if item.waist %}{% trans "Taille" %} : {{ item.waist }} cm · {% endif %}
+            {% if item.hips %}{% trans "Hanches" %} : {{ item.hips }} cm{% endif %}
+            <br><a href="{% url 'cart:edit_size' item.id %}">{% trans "Choisir une taille" %}</a>
+          </div>
+          {% else %}
+          <div class="measurements"><a href="{% url 'cart:edit_size' item.id %}">{% trans "Choisir une taille" %}</a></div>
+          {% endif %}
+          <div class="qty-control">
+            <form method="post" action="{% url 'cart:update_quantity' item.id %}"><input type="hidden" name="action" value="decrease">{% csrf_token %}<button>−</button></form>
+            <span>{{ item.quantity }}</span>
+            <form method="post" action="{% url 'cart:update_quantity' item.id %}"><input type="hidden" name="action" value="increase">{% csrf_token %}<button>+</button></form>
+          </div>
+        </div>
+        <div>
+          <strong>{{ item.line_total|fcfa }} FCFA</strong><br>
+          <form method="post" action="{% url 'cart:remove_item' item.id %}" style="margin-top:10px;">{% csrf_token %}
+            <button type="submit" class="btn btn-outline btn-sm">{% trans "Supprimer" %}</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="summary-card">
+      <h3 style="margin-bottom:16px;">{% trans "Récapitulatif" %}</h3>
+      <div class="summary-row"><span>{% trans "Sous-total" %}</span><span>{{ cart.subtotal|fcfa }} FCFA</span></div>
+      <div class="summary-row"><span>{% trans "Livraison" %}</span><span>{% trans "Calculée au checkout" %}</span></div>
+      <div class="summary-row total"><span>{% trans "Total estimé" %}</span><span>{{ cart.subtotal|fcfa }} FCFA</span></div>
+      <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-block" style="margin-top:16px;">{% trans "Passer la commande" %} →</a>
+      <a href="{% url 'products:catalog' %}" class="btn btn-outline btn-block" style="margin-top:10px;">{% trans "Continuer mes achats" %}</a>
+    </div>
+  </div>
+{% else %}
+  <p>{% trans "Votre panier est vide." %} <a href="{% url 'products:catalog' %}">{% trans "Découvrir la boutique" %} →</a></p>
+{% endif %}
+</div>
+{% endblock %}

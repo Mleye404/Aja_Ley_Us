@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="page-header">
+  {% if promo_only %}
+  <h1>{% trans "Promotions" %}</h1><div class="breadcrumb">{% trans "Accueil" %} / {% trans "Promotions" %} · <a href="{% url 'products:catalog' %}" class="section-link">{% trans "Voir toute la boutique" %}</a></div>
+  {% else %}
+  <h1>{% trans "Boutique" %}</h1><div class="breadcrumb">{% trans "Accueil" %} / {% trans "Boutique" %}</div>
+  {% endif %}
+</div>
+<div class="container" style="padding:50px 0;">
+  <div class="catalog-layout">
+    <aside class="filters">
+      <div class="search-bar">
+        <form method="get">
+          {% if selected_categorie %}<input type="hidden" name="categorie" value="{{ selected_categorie }}">{% endif %}
+          {% if promo_only %}<input type="hidden" name="promo" value="1">{% endif %}
+          <input type="text" name="q" value="{{ query }}" placeholder="{% trans 'Rechercher un produit' %}">
+        </form>
+      </div>
+      <div class="filter-group">
+        <h4>{% trans "Catégories" %}</h4>
+        <a href="?{% if query %}q={{ query }}&{% endif %}" class="{% if not selected_categorie %}active{% endif %}">{% trans "Toutes" %}</a>
+        {% for cat in categories %}
+        <a href="?categorie={{ cat.slug }}{% if query %}&q={{ query }}{% endif %}" class="{% if selected_categorie == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+        {% endfor %}
+      </div>
+      <div class="filter-group">
+        <h4>{% trans "Prix" %}</h4>
+        <a href="?{% if selected_categorie %}categorie={{ selected_categorie }}&{% endif %}" class="{% if not selected_prix %}active{% endif %}">{% trans "Tous les prix" %}</a>
+        <a href="?prix=moins15{% if selected_categorie %}&categorie={{ selected_categorie }}{% endif %}" class="{% if selected_prix == 'moins15' %}active{% endif %}">{% trans "Moins de 15 000 FCFA" %}</a>
+        <a href="?prix=15a25{% if selected_categorie %}&categorie={{ selected_categorie }}{% endif %}" class="{% if selected_prix == '15a25' %}active{% endif %}">15 000 – 25 000 FCFA</a>
+        <a href="?prix=plus25{% if selected_categorie %}&categorie={{ selected_categorie }}{% endif %}" class="{% if selected_prix == 'plus25' %}active{% endif %}">{% trans "Plus de 25 000 FCFA" %}</a>
+      </div>
+    </aside>
+    <div>
+      <div class="result-count">{{ products|length }} {% trans "produit(s)" %}</div>
+      <div class="product-grid">
+        {% for product in products %}
+          {% include "products/_product_card.html" %}
+        {% empty %}
+          <p>{% trans "Aucun produit ne correspond à votre recherche." %}</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

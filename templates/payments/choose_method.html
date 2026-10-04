@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="page-header"><h1>{% trans "Paiement" %}</h1></div>
+<div class="container" style="padding:50px 0;">
+  <div class="steps"><span>{% trans "Adresse" %}</span> › <span class="current">{% trans "Paiement" %}</span> › <span>{% trans "Confirmation" %}</span></div>
+  <div class="form-card">
+    <h3>{% trans "Choisissez votre méthode de paiement" %}</h3>
+    <p style="color:var(--gris); font-size:13px; margin:10px 0 20px;">{% trans "Total à payer" %} : <strong>{{ order.total }} FCFA</strong></p>
+    <form method="post">
+      {% csrf_token %}
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <button type="submit" name="method" value="WAVE" class="btn btn-outline btn-block">🌊 Wave</button>
+        <button type="submit" name="method" value="ORANGE_MONEY" class="btn btn-outline btn-block">🟠 Orange Money</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

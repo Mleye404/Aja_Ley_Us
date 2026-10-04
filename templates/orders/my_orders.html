@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n aja_extras %}
+{% block content %}
+<div class="page-header"><h1>{% trans "Mes commandes" %}</h1><div class="breadcrumb"><a href="{% url 'accounts:profile' %}" class="section-link">{% trans "Mon compte" %}</a> / {% trans "Mes commandes" %}</div></div>
+<div class="container orders-wrap">
+  {% for order in orders %}
+  <a href="{% url 'orders:order_detail' order.number %}" class="order-card">
+    <div class="order-card-head">
+      <strong class="order-number">{{ order.display_number }}</strong>
+      <span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span>
+    </div>
+    <div class="order-card-items">
+      {% for item in order.items.all %}<div>{{ item.product_name }} × {{ item.quantity }}</div>{% endfor %}
+    </div>
+    <div class="order-card-foot">
+      <span>{% trans "Total" %} : <strong>{{ order.total|fcfa }} FCFA</strong></span>
+      <span class="order-delivery">
+        {% if order.is_cancelled %}
+        {% elif order.expected_delivery_date %}{% trans "Livraison prévue" %} : {{ order.expected_delivery_date|date:"j F Y" }}
+        {% elif order.status != 'delivered' %}{% trans "Date de livraison : à confirmer" %}{% endif %}
+      </span>
+    </div>
+    <div class="order-card-date">{% trans "Commandée le" %} {{ order.created_at|date:"j F Y" }}</div>
+  </a>
+  {% empty %}
+  <p>{% trans "Vous n'avez aucune commande en cours." %} <a href="{% url 'products:catalog' %}" class="section-link">{% trans "Découvrir la boutique" %} →</a></p>
+  {% endfor %}
+</div>
+{% endblock %}

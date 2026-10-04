@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n aja_extras %}
+{% block content %}
+<div class="page-header"><h1>{% trans "Tableau de bord" %}</h1></div>
+<div class="container" style="padding:50px 0;">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="num">{{ total_orders }}</div><div class="label">{% trans "Commandes" %}</div></div>
+    <div class="stat-card"><div class="num">{{ pending_orders }}</div><div class="label">{% trans "En attente" %}</div></div>
+    <div class="stat-card"><div class="num">{{ preparing_orders }}</div><div class="label">{% trans "En préparation" %}</div></div>
+    <div class="stat-card"><div class="num">{{ delivered_orders }}</div><div class="label">{% trans "Livrées" %}</div></div>
+    <div class="stat-card"><div class="num">{{ total_customers }}</div><div class="label">{% trans "Clientes" %}</div></div>
+    <div class="stat-card"><div class="num">{{ total_products }}</div><div class="label">{% trans "Produits" %}</div></div>
+    <div class="stat-card"><div class="num">{{ promo_products }}</div><div class="label">{% trans "Produits en promotion" %}</div></div>
+    <div class="stat-card"><div class="num">{{ revenue|fcfa }} F</div><div class="label">{% trans "Chiffre d'affaires" %}</div></div>
+  </div>
+
+  <h3 style="margin-bottom:16px;">{% trans "Dernières commandes" %}</h3>
+  <table class="dash-table">
+    <thead><tr><th>{% trans "N° commande" %}</th><th>{% trans "Cliente" %}</th><th>{% trans "Produits" %}</th><th>{% trans "Total" %}</th><th>{% trans "Statut" %}</th><th>{% trans "Date" %}</th><th>{% trans "Livraison prévue" %}</th></tr></thead>
+    <tbody>
+    {% for order in recent_orders %}
+      <tr>
+        <td><a href="/admin/orders/order/{{ order.pk }}/change/">{{ order.display_number }}</a></td>
+        <td>{{ order.full_name }}<br><small>{{ order.city }}</small></td>
+        <td>{% for item in order.items.all %}{{ item.product_name }} ×{{ item.quantity }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+        <td>{{ order.total|fcfa }} FCFA</td>
+        <td>{{ order.get_status_display }}</td>
+        <td>{{ order.created_at|date:"d/m/Y" }}</td>
+        <td>{% if order.expected_delivery_date %}{{ order.expected_delivery_date|date:"d/m/Y" }}{% else %}—{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p style="margin-top:20px;"><a href="/admin/orders/order/" class="btn btn-outline btn-sm">{% trans "Gérer toutes les commandes dans Django Admin" %} →</a></p>
+</div>
+{% endblock %}

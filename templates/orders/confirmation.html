@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load i18n aja_extras %}
+{% block content %}
+<div class="container confirm-box">
+  <div class="confirm-icon">✓</div>
+  <h1>{% trans "Commande enregistrée" %}{% if order.is_international %} !{% endif %}</h1>
+  <p style="color:var(--gris); margin-top:10px;">
+    {% trans "Merci" %} {{ order.first_name }}, {% trans "votre commande a bien été enregistrée chez AJA LEY." %}
+  </p>
+  <div class="ref-box">{{ order.display_number }}</div>
+
+  {% if order.is_international %}
+  <div class="intl-confirm">
+    <p class="intl-confirm-text">{% trans "Pour confirmer votre commande internationale et définir les frais de livraison, contactez AJA LEY sur WhatsApp." %}</p>
+    <a href="{{ order.whatsapp_url }}" target="_blank" rel="noopener" class="btn btn-wa-solid btn-block btn-lg">
+      {% trans "Confirmer sur WhatsApp" %} →
+    </a>
+    <p class="intl-confirm-note">
+      {% trans "WhatsApp s'ouvre avec un message déjà rédigé (numéro de commande, nom, pays, montant) : relisez-le puis envoyez-le vous-même. Rien n'est envoyé automatiquement." %}
+      <br>WhatsApp AJA LEY : {{ WHATSAPP_INTL_DISPLAY }}
+    </p>
+  </div>
+  {% else %}
+  <div class="field-hint" style="text-align:left;">
+    {% trans "Dernière étape : envoyez ce récapitulatif à AJA LEY sur WhatsApp. AJA LEY confirmera la disponibilité, les frais de livraison éventuels et les modalités de paiement directement avec vous." %}
+  </div>
+
+  <a href="{{ order.whatsapp_url }}" target="_blank" class="btn btn-wa btn-block" style="margin-top:8px; background:#218838; color:#fff; border-color:#218838;">
+    {% trans "Commander via WhatsApp" %} →
+  </a>
+  {% endif %}
+
+  <div class="form-card" style="text-align:left; margin-top:28px;">
+    <h3 style="margin-bottom:14px;">{% trans "Récapitulatif" %}</h3>
+    {% for item in order.items.all %}
+    <div class="summary-row">
+      <span>{{ item.product_name }} ×{{ item.quantity }}</span><span>{{ item.line_total|fcfa }} FCFA</span>
+    </div>
+    {% if item.size or item.length %}
+    <div style="font-size:12px; color:var(--gris); margin:-4px 0 10px;">{% trans "Taille" %} : {{ item.size }}{% if item.length %} · {% trans "Longueur" %} : {{ item.length }}{% endif %}</div>
+    {% elif item.bust or item.waist or item.hips %}
+    <div style="font-size:12px; color:var(--gris); margin:-4px 0 10px;">
+      {% if item.bust %}{% trans "Poitrine" %} : {{ item.bust|floatformat:"-1" }} cm · {% endif %}
+      {% if item.waist %}{% trans "Taille" %} : {{ item.waist|floatformat:"-1" }} cm · {% endif %}
+      {% if item.hips %}{% trans "Hanches" %} : {{ item.hips|floatformat:"-1" }} cm{% endif %}
+    </div>
+    {% endif %}
+    {% endfor %}
+    <div class="summary-row"><span>{% trans "Sous-total" %}</span><span>{{ order.subtotal|fcfa }} FCFA</span></div>
+    <div class="summary-row"><span>{% trans "Livraison" %}</span><span>{% if order.shipping_fee %}{{ order.shipping_fee|fcfa }} FCFA{% else %}{{ order.shipping_note }}{% endif %}</span></div>
+    <div class="summary-row total"><span>{% if order.is_international %}{% trans "Total produits" %}{% else %}{% trans "Total" %}{% endif %}</span><span>{{ order.total|fcfa }} FCFA</span></div>
+    <div class="summary-row"><span>{% trans "Statut" %}</span><span>{{ order.get_status_display }}</span></div>
+  </div>
+
+  <p style="font-size:12px; color:var(--gris); margin-top:20px;">
+    {% trans "Le paiement se fait directement avec AJA LEY après confirmation — aucun paiement n'est demandé sur le site." %}
+  </p>
+  <br>
+  {% if order.user_id %}
+  <a href="{% url 'orders:order_detail' order.number %}" class="btn btn-primary" style="margin-right:8px;">{% trans "Suivre ma commande" %}</a>
+  {% elif not user.is_authenticated %}
+  <p style="font-size:12.5px; color:var(--gris); margin-bottom:14px;">
+    {% trans "Envie de suivre cette commande dans « Mes commandes » ?" %}
+    <a href="{% url 'accounts:login' %}" class="section-link">{% trans "Connectez-vous" %}</a> {% trans "ou" %}
+    <a href="{% url 'accounts:signup' %}" class="section-link">{% trans "créez un compte" %}</a>.
+  </p>
+  {% endif %}
+  <a href="{% url 'products:catalog' %}" class="btn btn-outline">{% trans "Continuer mes achats" %}</a>
+</div>
+{% endblock %}

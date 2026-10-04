@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="page-header"><h1>{% trans "Contact" %}</h1><div class="breadcrumb">{{ SITE_NAME }}</div></div>
+<div class="container" style="padding:60px 0; max-width:640px;">
+  <p style="color:var(--gris); line-height:1.8;">{% trans "Pour toute question sur nos produits, vos mensurations, une commande ou une livraison internationale, contactez-nous directement sur WhatsApp — notre équipe vous répond avec plaisir." %}</p>
+  <div style="display:flex; flex-direction:column; gap:14px; margin-top:30px; max-width:320px;">
+    <a class="btn btn-wa btn-block" href="{{ WHATSAPP_LINK }}" target="_blank">WhatsApp — {% trans "Sénégal" %} : {{ WHATSAPP_SENEGAL_DISPLAY }}</a>
+    <a class="btn btn-wa btn-block" href="https://wa.me/{{ WHATSAPP_INTL }}" target="_blank">WhatsApp — {% trans "International" %} : {{ WHATSAPP_INTL_DISPLAY }}</a>
+    <a class="btn btn-outline btn-block" href="{{ INSTAGRAM_LINK }}" target="_blank">📷 {{ INSTAGRAM_HANDLE }}</a>
+  </div>
+</div>
+{% endblock %}

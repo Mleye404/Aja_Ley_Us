@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="container">
+  <div class="auth-box">
+    <h1>{% trans "Créer un compte" %}</h1>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary btn-block">{% trans "Créer mon compte" %}</button>
+    </form>
+    <div class="auth-switch">{% trans "Déjà un compte ?" %} <a href="{% url 'accounts:login' %}">{% trans "Se connecter" %}</a></div>
+  </div>
+</div>
+{% endblock %}

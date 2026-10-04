@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="container">
+  <div class="form-card">
+    <h1 style="margin-bottom:20px;">{% trans "Ajouter une adresse" %}</h1>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary btn-block">{% trans "Enregistrer" %}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

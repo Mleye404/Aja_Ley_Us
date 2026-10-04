@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="page-header"><h1>{% trans "Votre taille" %}</h1><div class="breadcrumb">{{ product.name }}</div></div>
+<div class="container" style="padding:50px 0;">
+  <div class="form-card">
+    <form method="post">
+      {% csrf_token %}
+      {% include "products/_size_picker.html" %}
+      {{ form.size.errors }}{{ form.length.errors }}
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px;">{% trans "Mettre à jour" %}</button>
+    </form>
+  </div>
+</div>
+{% include "products/_size_guide.html" %}
+{% endblock %}

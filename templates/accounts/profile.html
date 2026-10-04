@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="page-header"><h1>{% trans "Mon compte" %}</h1></div>
+<div class="container account-home">
+  <div class="account-card">
+    <div class="account-hello">
+      <span class="account-avatar">{{ user.first_name|default:user.username|slice:":1"|upper }}</span>
+      <div>
+        <div class="account-name">{% trans "Bonjour" %} {{ user.first_name|default:user.username }}</div>
+        <div class="account-lead">{% trans "Retrouvez ici vos commandes et leur suivi." %}</div>
+      </div>
+    </div>
+
+    <nav class="account-links">
+      <a href="{% url 'orders:my_orders' %}" class="account-link">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 8h12l-1 12.5a1.5 1.5 0 0 1-1.5 1.5h-7a1.5 1.5 0 0 1-1.5-1.5L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span><strong>{% trans "Mes commandes" %}</strong><small>{% trans "Suivi, statut et date de livraison" %}</small></span>
+        <em>→</em>
+      </a>
+      <a href="{% url 'accounts:info' %}" class="account-link">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2s7 2.6 7 6.2"/></svg>
+        <span><strong>{% trans "Mes informations" %}</strong><small>{% trans "Nom, email, téléphone" %}</small></span>
+        <em>→</em>
+      </a>
+      <a href="{% url 'products:favorites' %}" class="account-link">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20.5s-8-5-8-11.2C4 5.9 6.2 4 8.7 4c1.5 0 2.8.8 3.3 2 .5-1.2 1.8-2 3.3-2 2.5 0 4.7 1.9 4.7 5.3 0 6.2-8 11.2-8 11.2z"/></svg>
+        <span><strong>{% trans "Mes favoris" %}</strong><small>{% trans "Les pièces que vous aimez" %}</small></span>
+        <em>→</em>
+      </a>
+    </nav>
+
+    {# Django 5 : la déconnexion se fait obligatoirement en POST (un simple lien renvoie une erreur 405). #}
+    <form method="post" action="{% url 'accounts:logout' %}" class="account-logout">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline btn-block">{% trans "Se déconnecter" %}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

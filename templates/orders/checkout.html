@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load i18n aja_extras %}
+{% block content %}
+<div class="page-header"><h1>{% if international %}{% trans "Commande internationale" %}{% else %}Checkout{% endif %}</h1></div>
+<div class="container" style="padding:50px 0;">
+  <div class="steps"><span>{% trans "Panier" %}</span> › <span class="current">{% trans "Informations" %}</span> › <span>{% trans "Récapitulatif" %}</span> › <span>{% trans "Confirmation" %}</span></div>
+  <div class="cart-layout">
+    <div>
+      <div class="form-card" style="margin:0;">
+        <form method="post">
+          {% csrf_token %}
+          <h3 style="margin-bottom:14px;">{% trans "Vos informations" %}</h3>
+          <div class="form-row">
+            <div class="form-group">{{ form.first_name.label_tag }}{{ form.first_name }}{{ form.first_name.errors }}</div>
+            <div class="form-group">{{ form.last_name.label_tag }}{{ form.last_name }}{{ form.last_name.errors }}</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">{{ form.phone.label_tag }}{{ form.phone }}{{ form.phone.errors }}</div>
+            <div class="form-group">{{ form.email.label_tag }}{{ form.email }}{{ form.email.errors }}</div>
+          </div>
+
+          <h3 style="margin:26px 0 14px;">{% trans "Livraison" %}</h3>
+          {% if international %}
+            <div class="form-row">
+              <div class="form-group">{{ form.country.label_tag }}{{ form.country }}{{ form.country.errors }}</div>
+              <div class="form-group">{{ form.city.label_tag }}{{ form.city }}{{ form.city.errors }}</div>
+            </div>
+            <div class="form-group">{{ form.district.label_tag }}{{ form.district }}{{ form.district.errors }}</div>
+          {% else %}
+            <div class="form-group">{{ form.region.label_tag }}{{ form.region }}{{ form.region.errors }}</div>
+            <div class="form-group" id="zoneGroup"{% if not zone_options %} hidden{% endif %}>
+              <label for="id_delivery_zone">{% trans "Zone de livraison" %}</label>
+              <select name="delivery_zone" id="id_delivery_zone">
+                <option value="">{% trans "Choisissez votre zone" %}</option>
+                {% for z in zone_options %}<option value="{{ z.name }}"{% if z.name == selected_zone %} selected{% endif %}>{{ z.name }} — {{ z.fee|fcfa }} FCFA</option>{% endfor %}
+              </select>
+              {{ form.delivery_zone.errors }}
+              <div class="zone-help" id="zoneHelp"{% if not zone_help %} hidden{% endif %}>{{ zone_help }}</div>
+            </div>
+            <div class="form-group" id="localityGroup"{% if not locality_visible %} hidden{% endif %}>
+              <label for="id_locality">{% trans "Ville / localité" %}</label>
+              <select name="locality" id="id_locality">
+                <option value="">{% trans "Choisissez votre ville / localité" %}</option>
+                {% for l in locality_options %}<option value="{{ l }}"{% if l == selected_locality %} selected{% endif %}>{{ l }}</option>{% endfor %}
+              </select>
+              {{ form.locality.errors }}
+            </div>
+            <div class="form-group" id="localityOtherGroup"{% if not other_visible %} hidden{% endif %}>
+              <label for="id_locality_other">{% trans "Précisez votre ville / localité" %}</label>
+              {{ form.locality_other }}
+              {{ form.locality_other.errors }}
+            </div>
+            <div class="form-group">{{ form.district.label_tag }}{{ form.district }}{{ form.district.errors }}
+              <div class="zone-help">{% trans "Le quartier sert uniquement à préciser l'adresse : il ne modifie pas les frais de livraison." %}</div>
+            </div>
+          {% endif %}
+          <div class="form-group">{{ form.extra_info.label_tag }}{{ form.extra_info }}{{ form.extra_info.errors }}</div>
+
+          {% if international %}
+          <div class="field-hint">🌍 {% trans "Les frais de livraison internationale seront confirmés avec AJA LEY (ils dépendent de la destination et du mode d'expédition)." %}</div>
+          {% endif %}
+          <div class="field-hint">ℹ️ {% trans "Aucun compte n'est requis pour commander. Vous pouvez finaliser votre commande en tant qu'invitée." %}</div>
+          <button type="submit" class="btn btn-primary btn-block">{% trans "Voir le récapitulatif" %} →</button>
+        </form>
+      </div>
+
+      {% if international %}
+      <div class="intl-hint">
+        <span>🇸🇳 {% trans "Vous commandez depuis le Sénégal ?" %}</span>
+        <a href="{% url 'orders:checkout' %}" class="section-link">{% trans "Commander au Sénégal" %} →</a>
+      </div>
+      {% else %}
+      <div class="intl-hint">
+        <span>🌍 {% trans "Vous commandez depuis l'international ?" %}</span>
+        <a href="{% url 'orders:checkout_international' %}" class="section-link">{% trans "Commander depuis l'international" %} →</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="summary-card" id="checkoutSummary" data-subtotal="{{ subtotal }}">
+      <h3 style="margin-bottom:16px;">{% trans "Votre commande" %}</h3>
+      {% for item in items %}
+      <div class="summary-row"><span>{{ item.product.name }} ×{{ item.quantity }}</span><span>{{ item.line_total|fcfa }} FCFA</span></div>
+      {% endfor %}
+      <div class="summary-row"><span>{% trans "Sous-total" %}</span><span>{{ subtotal|fcfa }} FCFA</span></div>
+      {% if international %}
+      <div class="summary-row"><span>{% trans "Livraison internationale" %}</span><span>{% trans "À confirmer" %}</span></div>
+      <div class="summary-row total"><span>{% trans "Total produits" %}</span><span>{{ subtotal|fcfa }} FCFA</span></div>
+      <p class="summary-note">{% trans "Les frais de livraison internationale seront confirmés avec AJA LEY." %}</p>
+      {% else %}
+      <div class="summary-row"><span>{% trans "Région" %}</span><span id="sumRegion">{% if selected_region %}{{ selected_region }}{% else %}—{% endif %}</span></div>
+      <div class="summary-row" id="sumZoneRow"{% if not selected_zone %} hidden{% endif %}><span>{% trans "Zone" %}</span><span id="sumZone">{{ selected_zone }}</span></div>
+      <div class="summary-row"><span>{% trans "Livraison" %}</span><span id="sumShipping">{% if shipping_fee is not None %}{{ shipping_fee|fcfa }} FCFA{% elif zone_options %}{% trans "Choisissez votre zone de livraison" %}{% else %}{% trans "Sélectionnez votre région" %}{% endif %}</span></div>
+      <div class="summary-row total"><span>{% trans "Total" %}</span><span id="sumTotal">{{ total|fcfa }} FCFA</span></div>
+      <p class="summary-note">{% trans "Les frais de livraison sont calculés automatiquement selon votre région et votre zone de livraison." %}</p>
+      {{ shipping_config|json_script:"shipping-config" }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

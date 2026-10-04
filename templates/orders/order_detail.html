@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load i18n aja_extras %}
+{% block content %}
+<div class="page-header"><h1>{% trans "Commande" %} {{ order.display_number }}</h1><div class="breadcrumb"><a href="{% url 'orders:my_orders' %}" class="section-link">{% trans "Mes commandes" %}</a> / {{ order.display_number }}</div></div>
+<div class="container orders-wrap">
+
+  <div class="order-top">
+    <span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span>
+    <span class="order-card-date">{% trans "Commandée le" %} {{ order.created_at|date:"j F Y" }}</span>
+  </div>
+
+  <div class="form-card order-block">
+    <h3>{% trans "Suivi de commande" %}</h3>
+    {% if order.is_cancelled %}
+      <p class="order-cancelled">{% trans "Cette commande a été annulée. Pour toute question, contactez AJA LEY sur WhatsApp." %}</p>
+    {% else %}
+      <ol class="tracker">
+        {% for step in order.tracking_steps %}
+        <li class="tracker-step {{ step.state }}">
+          <span class="tracker-dot">{% if step.state == 'done' %}✓{% elif step.state == 'current' %}●{% else %}○{% endif %}</span>
+          <span class="tracker-label">{{ step.label }}</span>
+        </li>
+        {% endfor %}
+      </ol>
+      <p class="order-delivery-line">
+        {% if order.expected_delivery_date %}{% trans "Livraison prévue" %} : <strong>{{ order.expected_delivery_date|date:"j F Y" }}</strong>
+        {% elif order.status != 'delivered' %}{% trans "Date de livraison : à confirmer" %}{% endif %}
+      </p>
+    {% endif %}
+  </div>
+
+  <div class="form-card order-block">
+    <h3>{% trans "Articles" %}</h3>
+    {% for item in order.items.all %}
+    <div class="summary-row"><span>{{ item.product_name }} × {{ item.quantity }}</span><span>{{ item.line_total|fcfa }} FCFA</span></div>
+    {% if item.size or item.length %}
+    <div class="order-measures">{% trans "Taille" %} : {{ item.size }}{% if item.length %} · {% trans "Longueur" %} : {{ item.length }}{% endif %}</div>
+    {% elif item.bust or item.waist or item.hips or item.shoulders or item.desired_length or item.sleeve_length %}
+    <div class="order-measures">
+      {% if item.bust %}{% trans "Poitrine" %} : {{ item.bust|floatformat:"-1" }} cm · {% endif %}
+      {% if item.waist %}{% trans "Taille" %} : {{ item.waist|floatformat:"-1" }} cm · {% endif %}
+      {% if item.hips %}{% trans "Hanches" %} : {{ item.hips|floatformat:"-1" }} cm · {% endif %}
+      {% if item.shoulders %}{% trans "Épaules" %} : {{ item.shoulders|floatformat:"-1" }} cm · {% endif %}
+      {% if item.desired_length %}{% trans "Longueur souhaitée" %} : {{ item.desired_length|floatformat:"-1" }} cm · {% endif %}
+      {% if item.sleeve_length %}{% trans "Longueur manches" %} : {{ item.sleeve_length|floatformat:"-1" }} cm{% endif %}
+    </div>
+    {% endif %}
+    {% endfor %}
+    <div class="summary-row"><span>{% trans "Sous-total" %}</span><span>{{ order.subtotal|fcfa }} FCFA</span></div>
+    <div class="summary-row"><span>{% trans "Livraison" %}</span><span>{% if order.shipping_fee %}{{ order.shipping_fee|fcfa }} FCFA{% else %}{{ order.shipping_note|default:"—" }}{% endif %}</span></div>
+    <div class="summary-row total"><span>{% if order.is_international %}{% trans "Total produits" %}{% else %}{% trans "Total" %}{% endif %}</span><span>{{ order.total|fcfa }} FCFA</span></div>
+  </div>
+
+  <div class="form-card order-block">
+    <h3>{% trans "Livraison" %}</h3>
+    <div class="info-list" style="margin-top:8px;">
+      <div>{% if order.is_international %}🌍 {{ order.city }}, {{ order.country }}{% else %}{% trans "Région" %} : {{ order.city }}{% endif %}{% if order.district %} — {{ order.district }}{% endif %}</div>
+      {% if order.delivery_zone %}<div>{% trans "Zone de livraison" %} : {{ order.delivery_zone }}{% if order.locality %} — {{ order.locality }}{% endif %}</div>{% endif %}
+      {% if order.extra_info %}<div>{% trans "Instructions" %} : {{ order.extra_info }}</div>{% endif %}
+    </div>
+  </div>
+
+  {% if order.status == 'pending' %}
+  <div class="order-actions">
+    <a href="{{ order.whatsapp_url }}" target="_blank" class="btn btn-wa btn-block" style="background:#218838; color:#fff; border-color:#218838;">{% if order.is_international %}{% trans "Confirmer sur WhatsApp" %}{% else %}{% trans "Envoyer ma commande via WhatsApp" %}{% endif %} →</a>
+    <p class="order-card-date" style="margin-top:10px;">{% trans "Le paiement se fait directement avec AJA LEY après confirmation — aucun paiement n'est demandé sur le site." %}</p>
+  </div>
+  {% endif %}
+  <p style="margin-top:24px;"><a href="{% url 'orders:my_orders' %}" class="btn btn-outline btn-sm">← {% trans "Mes commandes" %}</a></p>
+</div>
+{% endblock %}

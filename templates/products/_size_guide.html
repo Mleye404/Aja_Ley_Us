@@ -1,0 +1,26 @@
+{% load i18n %}
+{# Guide des tailles : texte + tableau uniquement (aucune image). Ouvert par le bouton « Guide des tailles ». #}
+<div class="modal" id="sizeGuide" role="dialog" aria-modal="true" aria-labelledby="sizeGuideTitle" hidden>
+  <div class="modal-box">
+    <button type="button" class="modal-close" data-close-modal aria-label="{% trans 'Fermer' %}">×</button>
+    <h2 id="sizeGuideTitle">{% trans "Guide des tailles" %}</h2>
+    <p class="modal-lead">{% trans "Prenez vos mesures chez vous, consultez le tableau, puis choisissez votre taille : XS, S, M, L, XL ou XXL." %}</p>
+    <ul class="modal-steps">
+      <li><strong>{% trans "Poitrine" %}</strong> : {% trans "mesurez autour de la partie la plus large de la poitrine." %}</li>
+      <li><strong>{% trans "Tour de taille" %}</strong> : {% trans "mesurez autour de la partie la plus étroite de la taille." %}</li>
+      <li><strong>{% trans "Hanches" %}</strong> : {% trans "mesurez autour de la partie la plus large des hanches." %}</li>
+      <li><strong>{% trans "Longueur souhaitée" %}</strong> : {% trans "mesurez de la tête aux pieds, en gardant une posture droite." %}</li>
+    </ul>
+    <div class="size-table-wrap">
+      <table class="size-table">
+        <thead><tr><th>{% trans "Taille" %}</th><th>{% trans "Poitrine" %}</th><th>{% trans "Tour de taille" %}</th><th>{% trans "Hanches" %}</th></tr></thead>
+        <tbody>
+          {% for size, bust, waist, hips in size_guide %}
+          <tr><th scope="row">{{ size }}</th><td>{{ bust }}</td><td>{{ waist }}</td><td>{{ hips }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="modal-note">{% trans "Toutes les dimensions sont indiquées en centimètres (cm)." %}</p>
+  </div>
+</div>
