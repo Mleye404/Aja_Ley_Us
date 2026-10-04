@@ -1,5 +1,3 @@
-Oui mec, tu as raison. Le README.md doit présenter **le projet, ses fonctionnalités, son architecture et son contexte**, tandis que tout ce qui concerne l'installation doit rester dans installation.md.  
-Voici la **version corrigée complète**, sans aucune section d'installation, de venv, de pip, de runserver, etc.  
 # AJA LEY — Boutique e-commerce  
    
 ![AJA LEY](static/img/favicon.png)  
@@ -410,11 +408,3 @@ Ces fonctionnalités ne sont pas nécessaires au fonctionnement de la version ac
 Projet réalisé par :  
 **Mouhamadou Leye & Khady Ka**  
 Le projet est développé dans le cadre d'un projet académique et constitue également une base destinée à répondre aux besoins réels de la boutique AJA LEY.  
-## **📄 Licence**  
-Projet réalisé dans le cadre d'un projet académique et pour les besoins de la boutique AJA LEY.  
-Les contenus, images, produits, identité visuelle et éléments propres à AJA LEY restent liés à la boutique et ne doivent pas être réutilisés sans autorisation.  
-<div align="center">   
-**AJA LEY**  
-*FOR EVERY MOOD. EVERY YOU.*  
-**Développé par Mouhamadou Leye & Khady Ka**  
-</div> ```   
