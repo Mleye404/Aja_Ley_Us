@@ -719,7 +719,7 @@ class AuditFixesTests(OrderFlowMixin, TestCase):
             self.assertEqual(self.client.get(reverse(name, args=args)).status_code, 405)
         self.assertEqual(CartItem.objects.get().quantity, 1)
         User.objects.create_user("awa", password="pass12345")
-        self.client.login(username="awa", password="pass12345")
+        self.client.post(reverse("accounts:login"), {"username": "awa", "password": "pass12345"})
         resp = self.client.get(reverse("products:toggle_favorite", args=[self.dress.slug]))
         self.assertEqual(resp.status_code, 405)
         resp = self.client.post(reverse("cart:update_quantity", args=[item.pk]), {"action": "increase"})

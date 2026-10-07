@@ -1,0 +1,12 @@
+{% extends "dashboard/base.html" %}
+{% load aja_extras %}
+{% block title %}Produits | Administration AJA LEY{% endblock %}
+{% block breadcrumb %}Produits{% endblock %}
+{% block admin_content %}
+<header class="admin-page-head"><div><span class="admin-kicker">CATALOGUE</span><h1>Produits</h1><p>Gérez les fiches, les prix et la visibilité en boutique.</p></div><a class="admin-button" href="{% url 'dashboard:product_create' %}"><span aria-hidden="true">＋</span> Nouveau produit</a></header>
+<section class="admin-panel"><form class="admin-filters" method="get"><label class="admin-search">Rechercher un produit<input type="search" name="q" value="{{ query }}" placeholder="Nom du produit"></label><button class="admin-button" type="submit">Rechercher</button></form>
+<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Produit</th><th>Catégorie</th><th>Prix boutique</th><th>Disponibilité</th><th>Mise en avant</th><th>Actions</th></tr></thead><tbody>
+{% for product in products %}<tr><td><a class="admin-ref" href="{% url 'dashboard:product_update' product.pk %}">{{ product.name }}</a>{% if product.is_on_promo %}<small>Promotion active · prix normal {{ product.price|fcfa }} FCFA</small>{% endif %}</td><td>{{ product.category|default:"—" }}</td><td>{{ product.current_price|fcfa }} FCFA</td><td><span class="status-pill {% if product.is_available %}status-delivered{% else %}status-cancelled{% endif %}">{% if product.is_available %}Disponible{% else %}Indisponible{% endif %}</span></td><td>{% if product.is_bestseller %}Meilleure vente{% elif product.is_new %}Nouveauté{% elif product.is_featured %}Mis en avant{% else %}—{% endif %}</td><td><div class="admin-row-actions"><a class="text-action" href="{% url 'dashboard:product_update' product.pk %}">Modifier</a><form method="post" action="{% url 'dashboard:product_toggle_availability' product.pk %}">{% csrf_token %}<button class="admin-inline-action" type="submit">{% if product.is_available %}Marquer indisponible{% else %}Remettre en stock{% endif %}</button></form><a class="admin-inline-action admin-row-delete" href="{% url 'dashboard:product_delete' product.pk %}">Supprimer</a></div></td></tr>
+{% empty %}<tr><td colspan="6" class="admin-empty">Aucun produit trouvé. Ajoutez votre premier produit au catalogue.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

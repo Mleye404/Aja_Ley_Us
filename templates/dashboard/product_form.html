@@ -1,0 +1,10 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ page_title }} | Administration AJA LEY{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:products' %}">Produits</a> / {{ page_title }}{% endblock %}
+{% block admin_content %}
+<header class="admin-page-head"><div><span class="admin-kicker">CATALOGUE</span><h1>{{ page_title }}</h1><p>Les changements sont visibles sur la boutique après enregistrement.</p></div><a class="admin-button admin-button-muted" href="{% url 'dashboard:products' %}">← Retour aux produits</a></header>
+<form method="post" enctype="multipart/form-data" class="admin-panel admin-product-form">{% csrf_token %}{% if form.non_field_errors %}<div class="admin-form-error">{{ form.non_field_errors }}</div>{% endif %}
+<div class="admin-form-grid">{% for field in form %}<div class="admin-field {% if field.field.widget.input_type == 'checkbox' %}admin-check-field{% elif field.name == 'description' %}admin-field-wide{% endif %}">{% if field.field.widget.input_type == 'checkbox' %}<label class="admin-checkbox">{{ field }}<span>{{ field.label }}</span></label>{% else %}{{ field.label_tag }}{{ field }}{% endif %}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% if field.errors %}<div class="admin-form-error">{{ field.errors }}</div>{% endif %}</div>{% endfor %}</div>
+{% if product %}<p class="admin-note">Pour remplacer la photo principale, choisissez un nouveau fichier. Laissez ce champ vide pour conserver la photo actuelle.</p>{% endif %}<div class="admin-form-actions"><a class="admin-button admin-button-muted" href="{% url 'dashboard:products' %}">Annuler</a><button class="admin-button" type="submit">Enregistrer le produit</button></div></form>
+{% if product %}<div class="admin-delete-action"><span>Suppression définitive du produit</span><a class="admin-button admin-button-danger" href="{% url 'dashboard:product_delete' product.pk %}">Supprimer ce produit</a></div>{% endif %}
+{% endblock %}

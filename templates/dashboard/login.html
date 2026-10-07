@@ -1,0 +1,16 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Connexion équipe | AJA LEY</title><link rel="stylesheet" href="{% static 'css/style.css' %}"><link rel="stylesheet" href="{% static 'css/admin.css' %}?v=2"></head>
+<body class="admin-login-page">
+  <main class="admin-login-layout">
+    <section class="admin-login-brand"><a href="{% url 'core:home' %}"><img src="{% static 'brand/logo.png' %}" alt="AJA LEY"></a><span>ESPACE PRIVÉ</span><h1>La boutique,<br>côté coulisses.</h1><p>Connectez-vous pour suivre les commandes et faire vivre le catalogue AJA LEY.</p></section>
+    <section class="admin-login-form-wrap"><form class="admin-login-form" method="post">
+      {% csrf_token %}<span class="admin-kicker">ACCÈS ÉQUIPE</span><h2>Connexion</h2><p>Réservé aux comptes de l'équipe AJA LEY.</p>
+      {% if form.non_field_errors %}<div class="admin-form-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+      {% for field in form %}<div class="admin-field">{{ field.label_tag }}{{ field }}{% if field.errors %}<div class="admin-form-error">{{ field.errors }}</div>{% endif %}</div>{% endfor %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}<button class="admin-button admin-button-full" type="submit">Se connecter <span aria-hidden="true">→</span></button>
+    </form><a class="admin-back-link" href="{% url 'core:home' %}">← Retour à la boutique</a></section>
+  </main>
+</body>
+</html>

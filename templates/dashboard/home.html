@@ -1,36 +1,19 @@
-{% extends "base.html" %}
-{% load i18n aja_extras %}
-{% block content %}
-<div class="page-header"><h1>{% trans "Tableau de bord" %}</h1></div>
-<div class="container" style="padding:50px 0;">
-  <div class="stats-grid">
-    <div class="stat-card"><div class="num">{{ total_orders }}</div><div class="label">{% trans "Commandes" %}</div></div>
-    <div class="stat-card"><div class="num">{{ pending_orders }}</div><div class="label">{% trans "En attente" %}</div></div>
-    <div class="stat-card"><div class="num">{{ preparing_orders }}</div><div class="label">{% trans "En préparation" %}</div></div>
-    <div class="stat-card"><div class="num">{{ delivered_orders }}</div><div class="label">{% trans "Livrées" %}</div></div>
-    <div class="stat-card"><div class="num">{{ total_customers }}</div><div class="label">{% trans "Clientes" %}</div></div>
-    <div class="stat-card"><div class="num">{{ total_products }}</div><div class="label">{% trans "Produits" %}</div></div>
-    <div class="stat-card"><div class="num">{{ promo_products }}</div><div class="label">{% trans "Produits en promotion" %}</div></div>
-    <div class="stat-card"><div class="num">{{ revenue|fcfa }} F</div><div class="label">{% trans "Chiffre d'affaires" %}</div></div>
-  </div>
-
-  <h3 style="margin-bottom:16px;">{% trans "Dernières commandes" %}</h3>
-  <table class="dash-table">
-    <thead><tr><th>{% trans "N° commande" %}</th><th>{% trans "Cliente" %}</th><th>{% trans "Produits" %}</th><th>{% trans "Total" %}</th><th>{% trans "Statut" %}</th><th>{% trans "Date" %}</th><th>{% trans "Livraison prévue" %}</th></tr></thead>
-    <tbody>
-    {% for order in recent_orders %}
-      <tr>
-        <td><a href="/admin/orders/order/{{ order.pk }}/change/">{{ order.display_number }}</a></td>
-        <td>{{ order.full_name }}<br><small>{{ order.city }}</small></td>
-        <td>{% for item in order.items.all %}{{ item.product_name }} ×{{ item.quantity }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-        <td>{{ order.total|fcfa }} FCFA</td>
-        <td>{{ order.get_status_display }}</td>
-        <td>{{ order.created_at|date:"d/m/Y" }}</td>
-        <td>{% if order.expected_delivery_date %}{{ order.expected_delivery_date|date:"d/m/Y" }}{% else %}—{% endif %}</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  <p style="margin-top:20px;"><a href="/admin/orders/order/" class="btn btn-outline btn-sm">{% trans "Gérer toutes les commandes dans Django Admin" %} →</a></p>
-</div>
+{% extends "dashboard/base.html" %}
+{% load aja_extras %}
+{% block title %}Vue d'ensemble | Administration AJA LEY{% endblock %}
+{% block admin_content %}
+<header class="admin-page-head"><div><span class="admin-kicker">AJA LEY / PILOTAGE</span><h1>Vue d'ensemble</h1><p>Bonjour {{ request.user.first_name|default:request.user.username }}, voici l'activité de la boutique.</p></div><a class="admin-button" href="{% url 'dashboard:orders' %}">Voir les commandes <span aria-hidden="true">→</span></a></header>
+<section class="admin-stats" aria-label="Indicateurs de la boutique">
+  <article class="admin-stat"><span>Commandes reçues</span><strong>{{ total_orders }}</strong><small>{{ pending_orders }} en attente</small></article>
+  <article class="admin-stat"><span>En préparation</span><strong>{{ preparing_orders }}</strong><small>À traiter par l'équipe</small></article>
+  <article class="admin-stat"><span>Produits au catalogue</span><strong>{{ total_products }}</strong><small>{{ promo_products }} en promotion</small></article>
+  <article class="admin-stat"><span>Chiffre d'affaires suivi</span><strong>{{ revenue|fcfa }} <small>FCFA</small></strong><small>{{ total_customers }} comptes clients</small></article>
+</section>
+<section class="admin-panel"><div class="admin-section-head"><div><span class="admin-kicker">À SUIVRE</span><h2>Commandes récentes</h2></div><a href="{% url 'dashboard:orders' %}">Toutes les commandes →</a></div>
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Commande</th><th>Cliente</th><th>Articles</th><th>Total</th><th>Statut</th><th></th></tr></thead><tbody>
+  {% for order in recent_orders %}<tr><td><a class="admin-ref" href="{% url 'dashboard:order_update' order.pk %}">{{ order.display_number }}</a><small>{{ order.created_at|date:"d/m/Y" }}</small></td><td>{{ order.full_name }}<small>{{ order.phone }}</small></td><td>{% for item in order.items.all %}{{ item.product_name }} ×{{ item.quantity }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</td><td>{{ order.total|fcfa }} FCFA</td><td><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></td><td><a class="text-action" href="{% url 'dashboard:order_update' order.pk %}">Ouvrir</a></td></tr>
+  {% empty %}<tr><td colspan="6" class="admin-empty">Aucune commande pour le moment.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+<section class="admin-shortcuts"><a href="{% url 'dashboard:product_create' %}"><span>＋</span><div><strong>Ajouter un produit</strong><small>Créer une nouvelle fiche catalogue</small></div></a><a href="{% url 'dashboard:products' %}"><span>◇</span><div><strong>Gérer les produits</strong><small>Prix, promotions et disponibilité</small></div></a><a href="{% url 'admin:index' %}"><span>↗</span><div><strong>Administration avancée</strong><small>Accéder aux outils Django</small></div></a></section>
 {% endblock %}

@@ -1,0 +1,12 @@
+{% extends "dashboard/base.html" %}
+{% load aja_extras %}
+{% block title %}Commandes | Administration AJA LEY{% endblock %}
+{% block breadcrumb %}Commandes{% endblock %}
+{% block admin_content %}
+<header class="admin-page-head"><div><span class="admin-kicker">SUIVI CLIENTÈLE</span><h1>Commandes</h1><p>Recherchez une commande et mettez à jour son suivi.</p></div></header>
+<section class="admin-panel"><form class="admin-filters" method="get"><label class="admin-search">Recherche<input type="search" name="q" value="{{ query }}" placeholder="N°, nom, téléphone"></label><label>Statut<select name="status"><option value="">Tous les statuts</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label><button class="admin-button" type="submit">Filtrer</button>{% if query or selected_status %}<a class="admin-clear" href="{% url 'dashboard:orders' %}">Effacer</a>{% endif %}</form>
+<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Référence</th><th>Cliente</th><th>Destination</th><th>Total</th><th>Statut</th><th>Livraison prévue</th><th></th></tr></thead><tbody>
+{% for order in orders %}<tr><td><a class="admin-ref" href="{% url 'dashboard:order_update' order.pk %}">{{ order.display_number }}</a><small>{{ order.created_at|date:"d/m/Y à H:i" }}</small></td><td>{{ order.full_name }}<small>{{ order.phone }}{% if order.user %} · Compte client{% else %} · Invitée{% endif %}</small></td><td>{{ order.city }}{% if order.locality %}<small>{{ order.locality }}</small>{% endif %}</td><td>{{ order.total|fcfa }} FCFA</td><td><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></td><td>{% if order.expected_delivery_date %}{{ order.expected_delivery_date|date:"d/m/Y" }}{% else %}À confirmer{% endif %}</td><td><a class="text-action" href="{% url 'dashboard:order_update' order.pk %}">Détail →</a></td></tr>
+{% empty %}<tr><td colspan="7" class="admin-empty">Aucune commande ne correspond à ces critères.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

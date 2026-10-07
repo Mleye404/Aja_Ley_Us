@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Administration AJA LEY{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}"><link rel="stylesheet" href="{% static 'css/admin.css' %}?v=2">
+</head>
+<body class="admin-app"><div class="admin-shell">
+  <aside class="admin-sidebar"><a class="admin-brand" href="{% url 'dashboard:home' %}"><img src="{% static 'brand/logo.png' %}" alt=""><span>AJA LEY<small>ESPACE DE GESTION</small></span></a>
+    <div class="admin-side-label">BOUTIQUE</div><nav class="admin-nav" aria-label="Navigation d'administration">
+      <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.url_name == 'home' %}is-active{% endif %}"><span>⌂</span>Vue d'ensemble</a>
+      <a href="{% url 'dashboard:orders' %}" class="{% if request.resolver_match.url_name == 'orders' or request.resolver_match.url_name == 'order_update' %}is-active{% endif %}"><span>▤</span>Commandes</a>
+      <a href="{% url 'dashboard:products' %}" class="{% if request.resolver_match.url_name == 'products' or request.resolver_match.url_name == 'product_create' or request.resolver_match.url_name == 'product_update' or request.resolver_match.url_name == 'product_delete' %}is-active{% endif %}"><span>◇</span>Produits</a>
+    </nav><div class="admin-sidebar-bottom"><a href="{% url 'admin:index' %}">Outils Django ↗</a></div>
+  </aside><main class="admin-main"><div class="admin-topline"><span>Administration / {% block breadcrumb %}Vue d'ensemble{% endblock %}</span><div class="admin-top-actions"><span class="admin-user"><i></i>{{ request.user.get_username }}</span><form method="post" action="{% url 'dashboard:logout' %}">{% csrf_token %}<button class="admin-top-logout" type="submit">Déconnexion</button></form></div></div>
+    {% if messages %}<div class="admin-messages">{% for message in messages %}<div class="admin-message">{{ message }}</div>{% endfor %}</div>{% endif %}<div class="admin-content">{% block admin_content %}{% endblock %}</div>
+  </main>
+</div></body></html>

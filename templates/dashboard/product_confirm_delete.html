@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Supprimer {{ product.name }} | Administration AJA LEY{% endblock %}
+{% block breadcrumb %}<a href="{% url 'dashboard:products' %}">Produits</a> / Suppression{% endblock %}
+{% block admin_content %}
+<header class="admin-page-head"><div><span class="admin-kicker">ACTION IRRÉVERSIBLE</span><h1>Supprimer ce produit ?</h1><p>Vérifiez les conséquences avant de confirmer.</p></div></header>
+<section class="admin-panel admin-delete-confirm">
+  <h2>{{ product.name }}</h2>
+  <p>Le produit sera supprimé du catalogue. Il sera aussi retiré des paniers et des favoris qui le contiennent. Les commandes déjà enregistrées conserveront le nom et le prix de l’article dans leur historique.</p>
+  <form method="post" class="admin-form-actions">{% csrf_token %}<a class="admin-button admin-button-muted" href="{% url 'dashboard:product_update' product.pk %}">Annuler</a><button class="admin-button admin-button-danger" type="submit">Confirmer la suppression</button></form>
+</section>
+{% endblock %}
