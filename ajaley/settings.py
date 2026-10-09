@@ -3,19 +3,25 @@ from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Configuration par variables d'environnement (voir .env.example). Sans rien définir, le projet
-# démarre en mode développement (DEBUG activé, clé de développement non secrète).
+
+# Configuration de Django
 DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
     if not DEBUG:
-        raise ImproperlyConfigured("Définissez DJANGO_SECRET_KEY quand DJANGO_DEBUG=False.")
+        raise ImproperlyConfigured(
+            "Définissez DJANGO_SECRET_KEY quand DJANGO_DEBUG=False."
+        )
     SECRET_KEY = "django-insecure-cle-de-developpement-uniquement"
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    "localhost,127.0.0.1,[::1]"
+).split(",")
 
 
 INSTALLED_APPS = [
@@ -25,9 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'rest_framework',
-
     'core',
     'accounts',
     'products',
@@ -36,6 +40,7 @@ INSTALLED_APPS = [
     'payments',
     'dashboard',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -48,7 +53,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'ajaley.urls'
+
 
 TEMPLATES = [
     {
@@ -69,8 +76,11 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'ajaley.wsgi.application'
 
+
+# Base de données
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -78,6 +88,8 @@ DATABASES = {
     }
 }
 
+
+# Validation des mots de passe
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -85,6 +97,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+
+# Langue et fuseau horaire
 LANGUAGE_CODE = 'fr'
 TIME_ZONE = 'Africa/Dakar'
 USE_I18N = True
@@ -97,6 +111,8 @@ LANGUAGES = [
 
 LOCALE_PATHS = [BASE_DIR / 'locale']
 
+
+# Fichiers statiques et médias
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -104,30 +120,32 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+# Redirections après connexion et déconnexion
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'accounts:profile'
 LOGOUT_REDIRECT_URL = 'core:home'
 
 
-# ---- Informations de la marque AJA LEY ----
+# Informations de la boutique
 SITE_NAME = "AJA LEY"
 SITE_SLOGAN = "FOR EVERY MOOD. EVERY YOU."
+
 WHATSAPP_SENEGAL = "+221776990926"
 WHATSAPP_SENEGAL_DISPLAY = "+221 77 699 09 26"
 WHATSAPP_INTL = "+13173199999"
 WHATSAPP_INTL_DISPLAY = "+1 317 319 9999"
 WHATSAPP_LINK = "https://wa.me/c/13173199999"
+
 INSTAGRAM_HANDLE = "@ajaley.us"
 INSTAGRAM_LINK = "https://www.instagram.com/ajaley.us"
 
-# Frais de livraison au Sénégal (FCFA) — « zones de livraison AJA LEY » :
-#   Dakar  : Dakar-ville SHIPPING_DAKAR / banlieue dakaroise SHIPPING_DAKAR_BANLIEUE
-#   Thiès  : Thiès-ville SHIPPING_THIES / autre localité de la région SHIPPING_THIES_OTHER
-#   Autres régions : SHIPPING_OTHER_REGIONS
-# (Le modèle ShippingRate permet, si besoin, de surcharger le tarif d'une région SANS zones.)
-# International : jamais de tarif automatique, les frais sont « à confirmer ».
+
+# Frais de livraison au Sénégal, en FCFA.
+# Les frais internationaux sont confirmés sur WhatsApp.
 SHIPPING_DAKAR = 2000
 SHIPPING_DAKAR_BANLIEUE = 4000
 SHIPPING_THIES = 1000

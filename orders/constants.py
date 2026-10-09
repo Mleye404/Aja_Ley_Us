@@ -10,7 +10,6 @@ SENEGAL_NAME = "Sénégal"
 
 # « Zones de livraison AJA LEY » : on ne reproduit PAS le découpage administratif du Sénégal.
 # Seules Dakar et Thiès ont des zones ; les autres régions ont un tarif unique.
-# `fee_setting` = nom du réglage de tarif dans settings.py ; `locality` = demander « Ville / localité ».
 OTHER_LOCALITY = "Autre"
 
 DELIVERY_ZONES = {
